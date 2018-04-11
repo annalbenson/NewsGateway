@@ -4,6 +4,9 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
@@ -20,10 +23,13 @@ public class NewsSourceDownloader extends AsyncTask<String,Void,String> {
 
     private static final String TAG = "NewsSourceDownloader";
     private static final String KEY = "85e81c15a86e405ebf43991e0e30520c"; // API key
-    private static final String URL_STEM1 = "";
-    private static final String URL_STEM2 = "";
+    private static final String URL_ALL_SOURCES = "https://newsapi.org/v1/sources?language=en&country=us&apiKey=";
+    private static final String URL_GET_CATEGORY = "https://newsapi.org/v1/sources?language=en&country=us&category=";
+    private static final String URL_CATEGORY_END = "&apiKey=";
     private MainActivity mainActivity;
     private String newsCategory;
+
+    private ArrayList<String> categories;
 
     public NewsSourceDownloader(MainActivity ma, String nc){
         mainActivity = ma;
@@ -42,6 +48,11 @@ public class NewsSourceDownloader extends AsyncTask<String,Void,String> {
     protected void onPostExecute(String s){
         Log.d(TAG, "onPostExecute: ");
 
+        ArrayList<Source> sourceList = parseJSON(s);
+
+        // create list of unique category names (did this in parse JSON to avoid another loop here)
+        mainActivity.setSources(sourceList, categories);
+
         return;
     }
 
@@ -51,13 +62,12 @@ public class NewsSourceDownloader extends AsyncTask<String,Void,String> {
         // connect to newsapi.org
         //    make a news source query (including category, "" is ok
 
-
-        String dataURL = URL_STEM1 + newsCategory + URL_STEM2;
-
+        String dataURL = URL_GET_CATEGORY + newsCategory + URL_CATEGORY_END + KEY;
+        Log.d(TAG, "doInBackground: URL is " + dataURL);
 
         Uri dataUri = Uri.parse(dataURL);
         String urlToUse = dataUri.toString();
-
+        Log.d(TAG, "doInBackground: " + urlToUse);
 
         StringBuilder sb = new StringBuilder();
         try {
@@ -92,19 +102,44 @@ public class NewsSourceDownloader extends AsyncTask<String,Void,String> {
 
     }
 
-    @Override
-    private ArrayList<Article> parseJSON(String s){
+    private ArrayList<Source> parseJSON(String s){
         Log.d(TAG, "parseJSON: ");
 
-        ArrayList<Article> articleList = new ArrayList<>();
+        ArrayList<Source> sourceList = new ArrayList<>();
+        categories = new ArrayList<>();
+
+        String id; String name; String url; String category;
+
+        Log.d(TAG, "parseJSON: String is " + s);
         try{
+            // get json object
+
+            JSONArray sources = new JSONArray(s);
+
+            for(int i = 0; i < sources.length(); i++){
+                JSONObject obj = sources.getJSONObject(i);
+                id = obj.getString("id");
+                name = obj.getString("name");
+                url = obj.getString("url");
+                category = obj.getString("category");
+
+                if(! categories.contains(category) ){
+                    categories.add(category);
+                    Log.d(TAG, "parseJSON: Added category " + category);
+                }
+
+                sourceList.add(new Source(id,name,url,category));
+            }
+
+            return sourceList;
 
         }catch (Exception e){
-
+            Log.d(TAG, "parseJSON: " + e.getMessage());
+            e.printStackTrace();
         }
 
-    }
+        return null;
 
-
+    } // end of parseJSON
 
 }

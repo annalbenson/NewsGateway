@@ -19,6 +19,8 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
     private static final String ACTION_NEWS_STORY = "ANS";
 
+    private MainActivity mainActivity = this;
+
     private NewsReceiver newsReceiver;
 
 
@@ -49,6 +51,8 @@ public class MainActivity extends AppCompatActivity {
 
         // Crete NewsSource Downloader Async Task object (with  no news category parameter) and execute)
 
+        new NewsSourceDownloader(mainActivity, "").execute();
+
         // End onCreate
 
     }
@@ -69,6 +73,30 @@ public class MainActivity extends AppCompatActivity {
         // set ViewPager's current item to item 0
     }
 
+
+    public void setSources(ArrayList<Source> sources, ArrayList<String> categories){
+
+        // clear the source map (HashMap of source names to Source objects
+
+        // clear the list of source names (used to populate the drawer list
+
+        // fill the list of sources (used to populate the drawer list) using names of sources passed in
+
+        // fill the source map with each new source name (key) and hte source object (value)
+
+        // if the activity's category list is null, set it to a new array using the list of categories passed in
+            // (Add "all" as the first item in that list)
+
+        // notify the drawer's array adapter that the dataset has changed
+
+        // END
+
+    }
+
+    // Drawer Item Selected
+    public void onItemClick(){
+
+    }
 
     // Flow Charts page 2/6--> News Receiver "Class inside Main Activity"
     public class NewsReceiver extends BroadcastReceiver {
