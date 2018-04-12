@@ -5,12 +5,18 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.res.Configuration;
 import android.os.IBinder;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -39,6 +45,9 @@ public class MainActivity extends AppCompatActivity {
     // drawer attributes
     private DrawerLayout drawerLayout;
     private ListView drawerList;
+
+    private ArrayAdapter arrayAdapter;
+
     private ActionBarDrawerToggle drawerToggle;
 
 
@@ -46,6 +55,12 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        sourceHashMap = new HashMap<>();
+        sourceNamesList = new ArrayList<>();
+        categoryList = new ArrayList<>();
+
+
 
         // Start Service (News Service)
         Intent intent = new Intent(MainActivity.this, NewsService.class);
@@ -64,8 +79,32 @@ public class MainActivity extends AppCompatActivity {
         drawerLayout = findViewById(R.id.drawer_layout);
         drawerList = findViewById(R.id.drawer_list);
 
-        drawerList.setOnItemClickListener();
+        /*
+        drawerList.setOnItemClickListener( onItemClick();
+                new ListView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                        //Country c = countryList.get(position);
+                        //Intent intent = new Intent(MainActivity.this, CountryDetailActivity.class);
+                        //intent.putExtra(Country.class.getName(), c);
+                        //startActivity(intent);
+                        Log.d(TAG, "onItemClick: Drawer Clicked");
+                        drawerLayout.closeDrawer(drawerList);
+                    }
+                }
+        );
+        */
 
+        // may have to recreate this when data is updated
+        //arrayAdapter = new ArrayAdapter<>(this, R.layout.drawer_item, sourceNamesList);
+        //drawerList.setAdapter(arrayAdapter);
+
+        drawerToggle = new ActionBarDrawerToggle(
+                this,                  /* host Activity */
+                drawerLayout,         /* DrawerLayout object */
+                R.string.drawer_open,  /* "open drawer" description for accessibility */
+                R.string.drawer_close  /* "close drawer" description for accessibility */
+        );
 
         // Setup supportActionBar
 
@@ -79,6 +118,54 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+
+    // You need the 2 below to make the drawer-toggle work properly:
+
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        // Sync the toggle state after onRestoreInstanceState has occurred.
+        mDrawerToggle.syncState();
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        // Pass any configuration change to the drawer toggls
+        mDrawerToggle.onConfigurationChanged(newConfig);
+    }
+
+
+
+    // You need the below to open the drawer when the toggle is clicked
+    // Same method is called when an options menu item is selected.
+
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        if (mDrawerToggle.onOptionsItemSelected(item)) {
+            Log.d(TAG, "onOptionsItemSelected: mDrawerToggle " + item);
+            return true;
+        }
+
+        countryList.clear();
+        countryList.addAll(countryData.get(item.getTitle()));
+
+        ((ArrayAdapter) mDrawerList.getAdapter()).notifyDataSetChanged();
+        //mDrawerList.setAdapter(new ArrayAdapter<>(this,  R.layout.drawer_item, countryData.get(selection)));
+
+        return super.onOptionsItemSelected(item);
+
+    }
+
+    // You need this to set up the options menu
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.opt_menu, menu);
+        opt_menu = menu;
+        return true;
+    }
+
+
     public void reDoFragments(ArrayList<Article> articleList){
 
         // set Activity Title to the string that holds the name of the current news source
@@ -91,7 +178,7 @@ public class MainActivity extends AppCompatActivity {
         // Clear the fragments list
 
         // For each Articles in the list passed in 0..n
-            // make a new Fragment using newsa rticle i
+            // make a new Fragment using news article i
             // notify PageAdapter
         // set ViewPager's current item to item 0
     }
@@ -123,7 +210,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         // notify the drawer's array adapter that the dataset has changed
-
+        //arrayAdapter.notifyDataSetChanged();
         // END
 
     }
@@ -142,6 +229,7 @@ public class MainActivity extends AppCompatActivity {
         // broadcast the intent
 
         // close the drawer
+        drawerLayout.closeDrawer(drawerList);
 
         // END
 
