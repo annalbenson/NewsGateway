@@ -12,6 +12,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -22,6 +23,14 @@ public class MainActivity extends AppCompatActivity {
     private MainActivity mainActivity = this;
 
     private NewsReceiver newsReceiver;
+
+
+    // HashMap for Source Names --> Source Objects
+    private HashMap<String,Source> sourceHashMap ; // <K is key type, V is value type>
+    // ArrayList of Source Names and ArrayList of Sources (used to populate drawer list)
+    private ArrayList<String> sourceNamesList;
+    //
+    private ArrayList<String> categoryList;
 
 
     @Override
@@ -76,15 +85,27 @@ public class MainActivity extends AppCompatActivity {
     public void setSources(ArrayList<Source> sources, ArrayList<String> categories){
 
         // clear the source map (HashMap of source names to Source objects
-
-        // clear the list of source names (used to populate the drawer list
+        // clear the list of source names (used to populate the drawer list)
+        sourceHashMap.clear();
+        sourceNamesList.clear();
 
         // fill the list of sources (used to populate the drawer list) using names of sources passed in
-
-        // fill the source map with each new source name (key) and hte source object (value)
+        // fill the source map with each new source name (key) and the source object (value)
+        for (int i = 0; i < sources.size(); i++ ){
+            sourceNamesList.add(sources.get(i).getName());
+            sourceHashMap.put(sources.get(i).getName(), sources.get(i));
+        }
 
         // if the activity's category list is null, set it to a new array using the list of categories passed in
             // (Add "all" as the first item in that list)
+
+        if(categoryList == null){
+            categoryList = new ArrayList<>();
+            categoryList.add("all");
+            for(int i = 0; i < categories.size(); i++){
+                categoryList.add(categories.get(i));
+            }
+        }
 
         // notify the drawer's array adapter that the dataset has changed
 

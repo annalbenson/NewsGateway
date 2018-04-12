@@ -24,6 +24,9 @@ public class NewsService extends Service {
     private ArrayList<Article> storylist;
     private ServiceReceiver serviceReceiver;
 
+
+    private NewsService newsService = this;
+
     @Override
     public IBinder onBind(Intent intent){ return null; }
 
@@ -96,9 +99,14 @@ public class NewsService extends Service {
         @Override
         public void onReceive(Context context, Intent intent){
 
-            // if the intent's action type is ASTION_MSG_TO_SERVICE
+            // if the intent's action type is ACTION_MSG_TO_SERVICE
                 // get source id string from intent's extras
-                // create news article downloader async task object using this and the source if as creator parameter and execute
+                // create news article downloader async task object using "this" and the source if as creator parameter and execute
+
+            if (intent.getAction().equals(ACTION_MSG_TO_SERVICE)){
+                String sourceID = intent.getStringExtra( "sourceid" );
+                new NewsArticleDownloader(newsService, sourceID).execute();
+            }
 
             // END
         }
