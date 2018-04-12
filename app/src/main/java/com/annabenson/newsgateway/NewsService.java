@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.IBinder;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 /**
@@ -21,6 +22,7 @@ public class NewsService extends Service {
     private boolean running = true;
 
     private ArrayList<Article> storylist;
+    private ServiceReceiver serviceReceiver;
 
     @Override
     public IBinder onBind(Intent intent){ return null; }
@@ -32,7 +34,7 @@ public class NewsService extends Service {
         IntentFilter intentFilter = new IntentFilter(ACTION_MSG_TO_SERVICE);
 
         // Register Service Receiver using intentFilter
-        ServiceReceiver serviceReceiver = new ServiceReceiver();
+        serviceReceiver = new ServiceReceiver();
         registerReceiver(serviceReceiver,intentFilter);
 
         // Create and start services thread
@@ -56,6 +58,7 @@ public class NewsService extends Service {
 
                     sendBroadcast(intent1);
                     // clear the storylist
+                    storylist.clear();
                 }
             }
         }).start();
@@ -64,10 +67,40 @@ public class NewsService extends Service {
     }
 
 
+    public void setArticles(ArrayList<Article> articles){
+        // clear article list (storylist)
+        storylist.clear();
+
+        // fill the article list using the parameter list
+
+        for( int i = 0; i < articles.size(); i ++ ){
+            storylist.add(articles.get(i));
+        }
+
+        // END
+    }
+
+    @Override
+    public void onDestroy() {
+        // unregister the service receiver
+        unregisterReceiver(serviceReceiver);
+        // set the service's thread's running flag to false
+        running = false;
+        // call super.destroy
+        super.onDestroy();
+        // END
+    }
+
+
     class ServiceReceiver extends BroadcastReceiver{
         @Override
         public void onReceive(Context context, Intent intent){
-            //
+
+            // if the intent's action type is ASTION_MSG_TO_SERVICE
+                // get source id string from intent's extras
+                // create news article downloader async task object using this and the source if as creator parameter and execute
+
+            // END
         }
     }
 

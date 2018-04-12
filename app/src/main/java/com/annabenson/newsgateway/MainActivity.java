@@ -30,12 +30,10 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         // Start Service (News Service)
-
         Intent intent = new Intent(MainActivity.this, NewsService.class);
         startService(intent);
 
         // Create IntentFilter for ACTION_NEWS_STORY messages from the service
-
         IntentFilter intentFilter = new IntentFilter(ACTION_NEWS_STORY);
 
         //Register a NewsReceiver broadcast receiver object using the intent filter
@@ -57,10 +55,11 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public void reDoFragments(Object [] list){
+    public void reDoFragments(ArrayList<Article> articleList){
 
         // set Activity Title to the string that holds the name of the current news source
 
+        //mainActivity.setTitle(current news source);
 
         // For each fragment in the PageAdapter (use adapter's getCount()
             // notify hte adapter about the change in position (i)
@@ -96,6 +95,21 @@ public class MainActivity extends AppCompatActivity {
     // Drawer Item Selected
     public void onItemClick(){
 
+        // set ViewPager's background to null
+
+        // set the current news source name to the selected source (using the list of source names and the selected index
+
+        // create an intent ACTION_MSG_TO_SVC
+
+        // add the selected source object (use the source map and the source name to get the object) as an extra to the intent
+
+        // broadcast the intent
+
+        // close the drawer
+
+        // END
+
+
     }
 
     // Flow Charts page 2/6--> News Receiver "Class inside Main Activity"
@@ -108,15 +122,16 @@ public class MainActivity extends AppCompatActivity {
 
             if(intent.getAction().equals(ACTION_NEWS_STORY)){
 
-                // Get the article list from intent's extras
-                if(intent.hasExtra("list")){
-                    //ArrayList<Article>
-                    // get list from intent
-                    // call reDoFragments on the list
+                try{
+                    // get article list from intent's extras
+                        // getSerializable? Bundle?
+                    // call reDoFragments
                 }
-                else{
-                    Log.d(TAG, "onReceive: No list extra");
+                catch (Exception e){
+                    Log.d(TAG, "onReceive: " + e.getMessage());
+                    e.printStackTrace();
                 }
+
             }
             else{
                 Log.d(TAG, "onReceive: Non recognised action type " + intent.getAction());

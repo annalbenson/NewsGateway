@@ -8,7 +8,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -19,50 +18,48 @@ import java.util.ArrayList;
  * Created by Anna on 4/11/2018.
  */
 
-public class NewsSourceDownloader extends AsyncTask<String,Void,String> {
+public class NewsArticleDownloader extends AsyncTask<String, Void, String> {
 
-    private static final String TAG = "NewsSourceDownloader";
+    private static final String TAG = "NewsArticleDownloader";
     private static final String KEY = "85e81c15a86e405ebf43991e0e30520c"; // API key
-    private static final String URL_ALL_SOURCES = "https://newsapi.org/v1/sources?language=en&country=us&apiKey=";
-    private static final String URL_GET_CATEGORY = "https://newsapi.org/v1/sources?language=en&country=us&category=";
-    private static final String URL_CATEGORY_END = "&apiKey=";
-    private MainActivity mainActivity;
-    private String newsCategory;
+    private static final String URL_STEM = "https://newsapi.org/v1/articles?source=";
+    private static final String URL_END = "&apiKey=";
 
-    private ArrayList<String> categories;
 
-    public NewsSourceDownloader(MainActivity ma, String nc){
-        mainActivity = ma;
+    private NewsService newsService;
+    private String newsSource;
 
-        if(nc.equals("all") || nc.equals("")){
-            newsCategory = "";
-        }
+
+    public NewsArticleDownloader(NewsService newsService, String newsSource){
+        this.newsService = newsService;
+        this.newsSource = newsSource;
+
+        // END
     }
 
     @Override
-    protected void onPreExecute(){
+    protected void onPreExecute() {
         Log.d(TAG, "onPreExecute: ");
     }
 
     @Override
-    protected void onPostExecute(String s){
+    protected void onPostExecute(String s) {
         Log.d(TAG, "onPostExecute: ");
-        try {
-            mainActivity.setSources(parseJSON(s), categories);
+        try{
+            newsService.setArticles(parseJSON(s));
         } catch (Exception e){
             Log.d(TAG, "onPostExecute: " + e.getMessage());
             e.printStackTrace();
         }
-
     }
 
     @Override
-    protected String doInBackground(String... params){
+    protected String doInBackground(String... strings) {
 
         // connect to newsapi.org
-        //    make a news source query (including category, "" is ok
+        // make a news article query iwth specified news source
 
-        String dataURL = URL_GET_CATEGORY + newsCategory + URL_CATEGORY_END + KEY;
+        String dataURL = URL_STEM + newsSource + URL_END + KEY;
         Log.d(TAG, "doInBackground: URL is " + dataURL);
 
         Uri dataUri = Uri.parse(dataURL);
@@ -99,40 +96,33 @@ public class NewsSourceDownloader extends AsyncTask<String,Void,String> {
         //Log.d(TAG, "doInBackground: " + sb.toString());
         Log.d(TAG, "doInBackground: returning");
         return sb.toString();
-
     }
 
-    private ArrayList<Source> parseJSON(String s){
+
+    private ArrayList<Article> parseJSON(String s){
         Log.d(TAG, "parseJSON: ");
 
-        ArrayList<Source> sourceList = new ArrayList<>();
-        categories = new ArrayList<>();
+        ArrayList<Article> articleList = new ArrayList<>();
 
-        String id; String name; String url; String category;
+        String author; String title; String description; String urlToImage; String publishedAt;
 
         Log.d(TAG, "parseJSON: String is " + s);
         try{
-            // get json object
-
             JSONObject entire = new JSONObject(s);
-            JSONArray sources = entire.getJSONArray("sources");
+            JSONArray articles = entire.getJSONArray("articles");
 
-            for(int i = 0; i < sources.length(); i++){
-                JSONObject obj = sources.getJSONObject(i);
-                id = obj.getString("id");
-                name = obj.getString("name");
-                url = obj.getString("url");
-                category = obj.getString("category");
+            for(int i = 0; i < articles.length(); i++){
+                JSONObject obj = articles.getJSONObject(i);
+                author = obj.getString("author");
+                title = obj.getString("title");
+                description = obj.getString("description");
+                urlToImage = obj.getString("urlToImage");
+                publishedAt = obj.getString("publishedAt");
 
-                if(! categories.contains(category) ){
-                    categories.add(category);
-                    Log.d(TAG, "parseJSON: Added category " + category);
-                }
-
-                sourceList.add(new Source(id,name,url,category));
+                articleList.add( new Article(author,title,description,urlToImage,publishedAt));
             }
 
-            return sourceList;
+            return articleList;
 
         }catch (Exception e){
             Log.d(TAG, "parseJSON: " + e.getMessage());
@@ -141,6 +131,5 @@ public class NewsSourceDownloader extends AsyncTask<String,Void,String> {
 
         return null;
 
-    } // end of parseJSON
-
+    } // end parseJSON
 }
