@@ -6,9 +6,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.IBinder;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -33,6 +36,12 @@ public class MainActivity extends AppCompatActivity {
     private ArrayList<String> categoryList;
 
 
+    // drawer attributes
+    private DrawerLayout drawerLayout;
+    private ListView drawerList;
+    private ActionBarDrawerToggle drawerToggle;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,6 +60,12 @@ public class MainActivity extends AppCompatActivity {
         registerReceiver(newsReceiver, intentFilter);
 
         // Setup drawer, adapter, and toggle
+
+        drawerLayout = findViewById(R.id.drawer_layout);
+        drawerList = findViewById(R.id.drawer_list);
+
+        drawerList.setOnItemClickListener();
+
 
         // Setup supportActionBar
 
