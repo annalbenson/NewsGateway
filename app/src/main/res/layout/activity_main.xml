@@ -13,6 +13,6 @@ tools:context="com.annabenson.newsgateway.MainActivity">
         android:layout_gravity="start"
         android:background="@android:color/background_dark"
         android:choiceMode="singleChoice"
-        android:onClick="onItemClick()" />
+         />
 
 </android.support.v4.widget.DrawerLayout>

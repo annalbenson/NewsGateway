@@ -35,10 +35,12 @@ public class MainActivity extends AppCompatActivity {
 
 
     // HashMap for Source Names --> Source Objects
-    private HashMap<String,Source> sourceHashMap ; // <K is key type, V is value type>
-    // ArrayList of Source Names and ArrayList of Sources (used to populate drawer list)
-    private ArrayList<String> sourceNamesList;
-    //
+    private HashMap<String,Source> sourceHashMap = new HashMap<>(); // <K is key type, V is value type>
+    // ArrayList of Source Names (used to populate drawer list)
+        // upper left hand
+    private ArrayList<String> sourceNamesList = new ArrayList<>();
+    // ArrayList of category names
+        // upper right hand
     private ArrayList<String> categoryList;
 
 
@@ -50,14 +52,13 @@ public class MainActivity extends AppCompatActivity {
 
     private ActionBarDrawerToggle drawerToggle;
 
+    private Menu opt_menu;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        sourceHashMap = new HashMap<>();
-        sourceNamesList = new ArrayList<>();
         categoryList = new ArrayList<>();
 
 
@@ -125,14 +126,14 @@ public class MainActivity extends AppCompatActivity {
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
         // Sync the toggle state after onRestoreInstanceState has occurred.
-        mDrawerToggle.syncState();
+        drawerToggle.syncState();
     }
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        // Pass any configuration change to the drawer toggls
-        mDrawerToggle.onConfigurationChanged(newConfig);
+        // Pass any configuration change to the drawer toggle
+        drawerToggle.onConfigurationChanged(newConfig);
     }
 
 
@@ -142,15 +143,18 @@ public class MainActivity extends AppCompatActivity {
 
     public boolean onOptionsItemSelected(MenuItem item) {
 
-        if (mDrawerToggle.onOptionsItemSelected(item)) {
-            Log.d(TAG, "onOptionsItemSelected: mDrawerToggle " + item);
+        if (drawerToggle.onOptionsItemSelected(item)) {
+            Log.d(TAG, "onOptionsItemSelected: drawerToggle " + item);
             return true;
         }
 
-        countryList.clear();
-        countryList.addAll(countryData.get(item.getTitle()));
+        //countryList is the list of countries --> sourceNamesList
+        // countryData is the hashmap        --> sourceHashMap
 
-        ((ArrayAdapter) mDrawerList.getAdapter()).notifyDataSetChanged();
+        sourceNamesList.clear();
+        sourceNamesList.addAll(sourceHashMap.get(item.getTitle()));
+
+        ((ArrayAdapter) drawerList.getAdapter()).notifyDataSetChanged();
         //mDrawerList.setAdapter(new ArrayAdapter<>(this,  R.layout.drawer_item, countryData.get(selection)));
 
         return super.onOptionsItemSelected(item);
@@ -232,7 +236,6 @@ public class MainActivity extends AppCompatActivity {
         drawerLayout.closeDrawer(drawerList);
 
         // END
-
 
     }
 
