@@ -21,6 +21,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity {
@@ -80,21 +81,24 @@ public class MainActivity extends AppCompatActivity {
         drawerLayout = findViewById(R.id.drawer_layout);
         drawerList = findViewById(R.id.drawer_list);
 
-        /*
-        drawerList.setOnItemClickListener( onItemClick();
+        drawerList.setAdapter(new ArrayAdapter<>(this,
+                R.layout.drawer_item, sourceNamesList));
+
+
+        drawerList.setOnItemClickListener(
                 new ListView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                        //Country c = countryList.get(position);
+                        String s = sourceNamesList.get(position);
                         //Intent intent = new Intent(MainActivity.this, CountryDetailActivity.class);
                         //intent.putExtra(Country.class.getName(), c);
                         //startActivity(intent);
-                        Log.d(TAG, "onItemClick: Drawer Clicked");
+                        Log.d(TAG, "onItemClick: Source Clicked: " + s);
                         drawerLayout.closeDrawer(drawerList);
                     }
-                }
+                } // end new
         );
-        */
+
 
         // may have to recreate this when data is updated
         //arrayAdapter = new ArrayAdapter<>(this, R.layout.drawer_item, sourceNamesList);
@@ -108,6 +112,9 @@ public class MainActivity extends AppCompatActivity {
         );
 
         // Setup supportActionBar
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
 
         // Setup PageViewer and Adapter
 
@@ -148,11 +155,21 @@ public class MainActivity extends AppCompatActivity {
             return true;
         }
 
+
         //countryList is the list of countries --> sourceNamesList
         // countryData is the hashmap        --> sourceHashMap
 
+        Source itemSource = (Source) item.getTitle();
+        String sourceId = itemSource.getName();
+        // sourceId will be the key? maybe sourceName?
+        // Either way, need to do a get call on Hashmap
+
+        Collection c = (Collection) sourceHashMap.get(sourceId); // what does this return? do I need to cast it for addAll
+
         sourceNamesList.clear();
-        sourceNamesList.addAll(sourceHashMap.get(item.getTitle()));
+        //sourceNamesList.addAll(sourceHashMap.get(item.getTitle()));
+
+        sourceNamesList.addAll(c);
 
         ((ArrayAdapter) drawerList.getAdapter()).notifyDataSetChanged();
         //mDrawerList.setAdapter(new ArrayAdapter<>(this,  R.layout.drawer_item, countryData.get(selection)));
@@ -214,7 +231,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         // notify the drawer's array adapter that the dataset has changed
-        //arrayAdapter.notifyDataSetChanged();
+        ((ArrayAdapter) drawerList.getAdapter()).notifyDataSetChanged();
         // END
 
     }
