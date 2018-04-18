@@ -30,6 +30,7 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -38,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
     private static final String ACTION_NEWS_STORY = "ANS";
+    private static final String ACTION_MSG_TO_SVC = "AMTS";
 
     private MainActivity mainActivity = this;
 
@@ -49,9 +51,9 @@ public class MainActivity extends AppCompatActivity {
     // ArrayList of Source Names (used to populate drawer list)
         // upper left hand
     private ArrayList<String> sourceNamesList = new ArrayList<>();
-    // ArrayList of category names
-        // upper right hand
-    private ArrayList<String> categoryList;
+
+    // HashMap for Category --> ArrayList of Source Name String
+    private HashMap<String, ArrayList<String> > categoryHashMap = new HashMap<>();
 
 
     // PageViewer & Fragments
@@ -71,9 +73,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        getSupportActionBar().setTitle("News Gateway");
 
-        categoryList = new ArrayList<>();
-
+        //categoryList = new ArrayList<>();
 
 
         // Start Service (News Service)
@@ -102,22 +104,32 @@ public class MainActivity extends AppCompatActivity {
                 new ListView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                        String s = sourceNamesList.get(position);
                         // set ViewPager's background to null
+                        pager.setBackground(null);
 
                         // set the current news source name to the selected source (using the list of source names and the selected index
+                        String current = sourceNamesList.get(position);
+                        getSupportActionBar().setTitle(current);
 
                         // create an intent ACTION_MSG_TO_SVC
+                        Intent intentClick = new Intent();
+                        intentClick.setAction(ACTION_MSG_TO_SVC);
 
                         // add the selected source object (use the source map and the source name to get the object) as an extra to the intent
+                        Source source = sourceHashMap.get(sourceNamesList.get(position));
+
+                        Bundle bundle = new Bundle();
+                        bundle.putSerializable("source", source);
+                        intentClick.putExtras(bundle);
 
                         // broadcast the intent
+                        sendBroadcast(intentClick);
 
                         // close the drawer
                         drawerLayout.closeDrawer(drawerList);
 
                         // END
-                        Log.d(TAG, "onItemClick: Source Clicked: " + s);
+                        Log.d(TAG, "onItemClick: Source Clicked: " + sourceNamesList.get(position));
                     }
                 } // end new
         );
@@ -153,6 +165,23 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+    }
+
+    @Override
+    protected void onResume(){
+        super.onResume();
+    }
+
+    @Override
+    protected void onDestroy() {
+
+        //unregisterReceiver(newsReceiver);
+
+        super.onDestroy();
+    }
 
     // You need the 2 below to make the drawer-toggle work properly:
 
@@ -182,21 +211,24 @@ public class MainActivity extends AppCompatActivity {
             return true;
         }
 
-
+        // this is effectively the else
+        Log.d(TAG, "onOptionsItemSelected: else");
         //countryList is the list of countries --> sourceNamesList
         // countryData is the hashmap        --> sourceHashMap
 
-        Source itemSource = (Source) item.getTitle();
-        String sourceId = itemSource.getName();
+        String title = (String) item.getTitle(); // This is a category title
+        Log.d(TAG, "onOptionsItemSelected: item.getTitle() is " + title);
+        //String sourceId = itemSource.getName();
         // sourceId will be the key? maybe sourceName?
         // Either way, need to do a get call on Hashmap
+        //sourceHashMap.get(title);
+        ArrayList<String> temp = new ArrayList<>(categoryHashMap.get(title)); // what does this return? do I need to cast it for addAll
 
-        Collection c = (Collection) sourceHashMap.get(sourceId); // what does this return? do I need to cast it for addAll
 
         sourceNamesList.clear();
         //sourceNamesList.addAll(sourceHashMap.get(item.getTitle()));
 
-        sourceNamesList.addAll(c);
+        sourceNamesList.addAll(temp);
 
         ((ArrayAdapter) drawerList.getAdapter()).notifyDataSetChanged();
 
@@ -254,24 +286,55 @@ public class MainActivity extends AppCompatActivity {
         // clear the list of source names (used to populate the drawer list)
         sourceHashMap.clear();
         sourceNamesList.clear();
+        categoryHashMap.clear(); // ed
 
+
+
+
+        Source source; String category; String name;
         // fill the list of sources (used to populate the drawer list) using names of sources passed in
         // fill the source map with each new source name (key) and the source object (value)
+        // not in flow: populate categoryHashMap based on categories of sources
         for (int i = 0; i < sources.size(); i++ ){
-            sourceNamesList.add(sources.get(i).getName());
-            sourceHashMap.put(sources.get(i).getName(), sources.get(i));
+            source = sources.get(i);
+            category = source.getCategory();
+            Log.d(TAG, "setSources: category: " + category);
+            name = source.getName();
+            Log.d(TAG, "setSources: name: " + name);
+            sourceNamesList.add(name);
+            sourceHashMap.put(name, source);
+
+            if(! categoryHashMap.containsKey(category)){
+                Log.d(TAG, "setSources: no key, adding key " + category);
+                categoryHashMap.put(category, new ArrayList<String>());
+            }
+            categoryHashMap.get(category).add(name);
         }
+
+        //categoryHashMap.put("All", sources);
 
         // if the activity's category list is null, set it to a new array using the list of categories passed in
             // (Add "all" as the first item in that list)
 
+        /*
         if(categoryList == null){
+            Log.d(TAG, "setSources: == null");
             categoryList = new ArrayList<>();
             categoryList.add("all");
             for(int i = 0; i < categories.size(); i++){
                 categoryList.add(categories.get(i));
             }
         }
+        */
+
+
+        // Not in Flow chart, see updateData in Geography MA
+        Collections.sort(categories);
+        for(String s : categories){
+            //Log.d(TAG, "setSources: adding to menu " + s);
+            opt_menu.add(s);
+        }
+
 
         // notify the drawer's array adapter that the dataset has changed
         ((ArrayAdapter) drawerList.getAdapter()).notifyDataSetChanged();

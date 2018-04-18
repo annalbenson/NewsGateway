@@ -1,10 +1,12 @@
 package com.annabenson.newsgateway;
 
+import java.io.Serializable;
+
 /**
  * Created by Anna on 4/10/2018.
  */
 
-public class Article {
+public class Article implements Serializable {
 
     private String author;
     private String title;

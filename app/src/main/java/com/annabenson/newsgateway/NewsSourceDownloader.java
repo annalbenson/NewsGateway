@@ -126,7 +126,7 @@ public class NewsSourceDownloader extends AsyncTask<String,Void,String> {
 
                 if(! categories.contains(category) ){
                     categories.add(category);
-                    Log.d(TAG, "parseJSON: Added category " + category);
+                    //Log.d(TAG, "parseJSON: Added category " + category);
                 }
 
                 sourceList.add(new Source(id,name,url,category));
