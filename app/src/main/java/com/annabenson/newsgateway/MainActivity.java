@@ -7,6 +7,14 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.os.IBinder;
+import android.support.annotation.NonNull;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewPager;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v4.app.Fragment;
+import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -23,6 +31,7 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -45,12 +54,15 @@ public class MainActivity extends AppCompatActivity {
     private ArrayList<String> categoryList;
 
 
+    // PageViewer & Fragments
+    private MyPageAdapter pageAdapter;
+    private List<Fragment> fragments;
+    private ViewPager pager;
+
+
     // drawer attributes
     private DrawerLayout drawerLayout;
     private ListView drawerList;
-
-    private ArrayAdapter arrayAdapter;
-
     private ActionBarDrawerToggle drawerToggle;
 
     private Menu opt_menu;
@@ -85,24 +97,32 @@ public class MainActivity extends AppCompatActivity {
                 R.layout.drawer_item, sourceNamesList));
 
 
+        // Drawer Item Selected
         drawerList.setOnItemClickListener(
                 new ListView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                         String s = sourceNamesList.get(position);
-                        //Intent intent = new Intent(MainActivity.this, CountryDetailActivity.class);
-                        //intent.putExtra(Country.class.getName(), c);
-                        //startActivity(intent);
-                        Log.d(TAG, "onItemClick: Source Clicked: " + s);
+                        // set ViewPager's background to null
+
+                        // set the current news source name to the selected source (using the list of source names and the selected index
+
+                        // create an intent ACTION_MSG_TO_SVC
+
+                        // add the selected source object (use the source map and the source name to get the object) as an extra to the intent
+
+                        // broadcast the intent
+
+                        // close the drawer
                         drawerLayout.closeDrawer(drawerList);
+
+                        // END
+                        Log.d(TAG, "onItemClick: Source Clicked: " + s);
                     }
                 } // end new
         );
 
 
-        // may have to recreate this when data is updated
-        //arrayAdapter = new ArrayAdapter<>(this, R.layout.drawer_item, sourceNamesList);
-        //drawerList.setAdapter(arrayAdapter);
 
         drawerToggle = new ActionBarDrawerToggle(
                 this,                  /* host Activity */
@@ -117,6 +137,13 @@ public class MainActivity extends AppCompatActivity {
         getSupportActionBar().setHomeButtonEnabled(true);
 
         // Setup PageViewer and Adapter
+
+        fragments = new ArrayList<>();
+
+        pageAdapter = new MyPageAdapter(getSupportFragmentManager());
+        pager = findViewById(R.id.viewpager);
+        pager.setAdapter(pageAdapter);
+
 
         // Crete NewsSource Downloader Async Task object (with  no news category parameter) and execute)
 
@@ -172,7 +199,6 @@ public class MainActivity extends AppCompatActivity {
         sourceNamesList.addAll(c);
 
         ((ArrayAdapter) drawerList.getAdapter()).notifyDataSetChanged();
-        //mDrawerList.setAdapter(new ArrayAdapter<>(this,  R.layout.drawer_item, countryData.get(selection)));
 
         return super.onOptionsItemSelected(item);
 
@@ -191,7 +217,7 @@ public class MainActivity extends AppCompatActivity {
 
         // set Activity Title to the string that holds the name of the current news source
 
-        //mainActivity.setTitle(current news source);
+        // mainActivity.setTitle(current news source);
 
         // For each fragment in the PageAdapter (use adapter's getCount()
             // notify hte adapter about the change in position (i)
@@ -202,6 +228,25 @@ public class MainActivity extends AppCompatActivity {
             // make a new Fragment using news article i
             // notify PageAdapter
         // set ViewPager's current item to item 0
+
+
+        for (int i = 0; i < pageAdapter.getCount(); i++)
+            pageAdapter.notifyChangeInPosition(i);
+
+        fragments.clear();
+        String src = items.get(idx);
+        int count = (int) (Math.random() * 8 + 2);
+
+        for (int i = 0; i < count; i++) {
+            fragments.add(MyFragment.newInstance(src + ", Item #" + (i+1) + " of " + count));
+        }
+
+        pageAdapter.notifyDataSetChanged();
+        pager.setCurrentItem(0);
+
+
+
+
     }
 
 
@@ -236,25 +281,6 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    // Drawer Item Selected
-    public void onItemClick(){
-
-        // set ViewPager's background to null
-
-        // set the current news source name to the selected source (using the list of source names and the selected index
-
-        // create an intent ACTION_MSG_TO_SVC
-
-        // add the selected source object (use the source map and the source name to get the object) as an extra to the intent
-
-        // broadcast the intent
-
-        // close the drawer
-        drawerLayout.closeDrawer(drawerList);
-
-        // END
-
-    }
 
     // Flow Charts page 2/6--> News Receiver "Class inside Main Activity"
     public class NewsReceiver extends BroadcastReceiver {
@@ -284,6 +310,48 @@ public class MainActivity extends AppCompatActivity {
 
 
     }
+
+    private class MyPageAdapter extends FragmentPagerAdapter {
+        private long baseId = 0;
+
+
+        public MyPageAdapter(FragmentManager fm) {
+            super(fm);
+        }
+
+        @Override
+        public int getItemPosition(@NonNull Object object) {
+            return POSITION_NONE;
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            return fragments.get(position);
+        }
+
+        @Override
+        public int getCount() {
+            return fragments.size();
+        }
+
+        @Override
+        public long getItemId(int position) {
+            // give an ID different from position when position has been changed
+            return baseId + position;
+        }
+
+        /**
+         * Notify that the position of a fragment has been changed.
+         * Create a new ID for each position to force recreation of the fragment
+         * @param n number of items which have been changed
+         */
+        public void notifyChangeInPosition(int n) {
+            // shift the ID returned by getItemId outside the range of all previous fragments
+            baseId += getCount() + n;
+        }
+
+    }
+
 
 
 
