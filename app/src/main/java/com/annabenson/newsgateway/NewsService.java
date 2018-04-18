@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.Bundle;
 import android.os.IBinder;
 
 import java.lang.reflect.Array;
@@ -23,7 +24,6 @@ public class NewsService extends Service {
 
     private ArrayList<Article> storylist;
     private ServiceReceiver serviceReceiver;
-
 
     private NewsService newsService = this;
 
@@ -56,7 +56,10 @@ public class NewsService extends Service {
                     // Not Empty: Make a new intent object with ACTION_NEWS_STORY action
                     Intent intent1 = new Intent();
                     intent1.setAction(ACTION_NEWS_STORY);
-                    intent1.putExtra("storylist", storylist);
+                    Bundle bundle = new Bundle();
+                    bundle.putSerializable("storylist", storylist);
+                    intent1.putExtras(bundle);
+                    //intent1.putExtra("storylist", storylist);
                     // broadcast the intent (Continue with Pg 2 "A"
 
                     sendBroadcast(intent1);

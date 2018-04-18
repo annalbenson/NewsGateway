@@ -28,10 +28,31 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
+import android.content.res.Configuration;
+import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewPager;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AppCompatActivity;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+import android.widget.Toast;
+
+import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
@@ -157,6 +178,7 @@ public class MainActivity extends AppCompatActivity {
         pager.setAdapter(pageAdapter);
 
 
+
         // Crete NewsSource Downloader Async Task object (with  no news category parameter) and execute)
 
         new NewsSourceDownloader(mainActivity, "").execute();
@@ -249,31 +271,29 @@ public class MainActivity extends AppCompatActivity {
 
         // set Activity Title to the string that holds the name of the current news source
 
-        // mainActivity.setTitle(current news source);
+        // mainActivity.setTitle(current news source);???
 
         // For each fragment in the PageAdapter (use adapter's getCount()
-            // notify hte adapter about the change in position (i)
+            // notify the adapter about the change in position (i)
+        for(int i = 0; i < pageAdapter.getCount(); i++ ){
+            pageAdapter.notifyChangeInPosition(i);
+        }
 
         // Clear the fragments list
+            fragments.clear();
 
         // For each Articles in the list passed in 0..n
             // make a new Fragment using news article i
-            // notify PageAdapter
-        // set ViewPager's current item to item 0
 
-
-        for (int i = 0; i < pageAdapter.getCount(); i++)
-            pageAdapter.notifyChangeInPosition(i);
-
-        fragments.clear();
-
-        for (int i = 0; i < articleList.size(); i++) {
+        for(int i = 0; i < articleList.size(); i++){
             String src = articleList.get(0).getTitle();
-            Log.d(TAG, "reDoFragments: XYZ" + src);
-            //fragments.add(MyFragment.newInstance(src + ", Item #" + (i+1) + " of "));
+            fragments.add(MyFragment.newInstance( src ));
         }
 
+
+        // notify PageAdapter
         pageAdapter.notifyDataSetChanged();
+        // set ViewPager's current item to item 0
         pager.setCurrentItem(0);
 
 
@@ -353,10 +373,14 @@ public class MainActivity extends AppCompatActivity {
 
             if(intent.getAction().equals(ACTION_NEWS_STORY)){
 
+                // receives storylist from NewsService
                 try{
                     // get article list from intent's extras
-                        // getSerializable? Bundle?
-                    // call reDoFragments
+
+                    Bundle bundle = intent.getExtras();
+                    ArrayList<Article> articles = (ArrayList<Article>) bundle.getSerializable("storylist");
+
+                    reDoFragments(articles);
                 }
                 catch (Exception e){
                     Log.d(TAG, "onReceive: " + e.getMessage());
