@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.util.Log;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -107,7 +108,9 @@ public class NewsService extends Service {
                 // create news article downloader async task object using "this" and the source if as creator parameter and execute
 
             if (intent.getAction().equals(ACTION_MSG_TO_SERVICE)){
+                Log.d(TAG, "onReceive: action is ACTION_MSG_TO_SERVICE");
                 String sourceID = intent.getStringExtra( "sourceid" );
+                Log.d(TAG, "onReceive: SourceID" + sourceID);
                 new NewsArticleDownloader(newsService, sourceID).execute();
             }
 

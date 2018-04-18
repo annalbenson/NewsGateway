@@ -1,19 +1,15 @@
 package com.annabenson.newsgateway;
 
-import android.app.Service;
+
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Configuration;
-import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.ViewPager;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -26,41 +22,18 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.Toast;
-
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import android.content.res.Configuration;
-import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.ViewPager;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
-import android.widget.Toast;
 
-import java.util.ArrayList;
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
 
     private static final String TAG = "MainActivity";
     private static final String ACTION_NEWS_STORY = "ANS";
-    private static final String ACTION_MSG_TO_SVC = "AMTS";
+    private static final String ACTION_MSG_TO_SERVICE = "AMTS";
 
     private MainActivity mainActivity = this;
 
@@ -96,8 +69,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         getSupportActionBar().setTitle("News Gateway");
 
-        //categoryList = new ArrayList<>();
-
 
         // Start Service (News Service)
         Intent intent = new Intent(MainActivity.this, NewsService.class);
@@ -132,9 +103,9 @@ public class MainActivity extends AppCompatActivity {
                         String current = sourceNamesList.get(position);
                         getSupportActionBar().setTitle(current);
 
-                        // create an intent ACTION_MSG_TO_SVC
+                        // create an intent ACTION_MSG_TO_SERVICE
                         Intent intentClick = new Intent();
-                        intentClick.setAction(ACTION_MSG_TO_SVC);
+                        intentClick.setAction(ACTION_MSG_TO_SERVICE);
 
                         // add the selected source object (use the source map and the source name to get the object) as an extra to the intent
                         Source source = sourceHashMap.get(sourceNamesList.get(position));
@@ -170,13 +141,10 @@ public class MainActivity extends AppCompatActivity {
         getSupportActionBar().setHomeButtonEnabled(true);
 
         // Setup PageViewer and Adapter
-
         fragments = new ArrayList<>();
-
         pageAdapter = new MyPageAdapter(getSupportFragmentManager());
         pager = findViewById(R.id.viewpager);
         pager.setAdapter(pageAdapter);
-
 
 
         // Crete NewsSource Downloader Async Task object (with  no news category parameter) and execute)
@@ -199,9 +167,6 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-
-        //unregisterReceiver(newsReceiver);
-
         super.onDestroy();
     }
 
@@ -233,18 +198,20 @@ public class MainActivity extends AppCompatActivity {
             return true;
         }
 
+
+
         // this is effectively the else
-        Log.d(TAG, "onOptionsItemSelected: else");
+        Log.d(TAG, "onOptionsItemSelected: else, category selected from options menu");
         //countryList is the list of countries --> sourceNamesList
         // countryData is the hashmap        --> sourceHashMap
 
-        String title = (String) item.getTitle(); // This is a category title
-        Log.d(TAG, "onOptionsItemSelected: item.getTitle() is " + title);
+        String category = (String) item.getTitle(); // This is a category title
+        Log.d(TAG, "onOptionsItemSelected: item.getTitle() is " + category);
         //String sourceId = itemSource.getName();
         // sourceId will be the key? maybe sourceName?
         // Either way, need to do a get call on Hashmap
         //sourceHashMap.get(title);
-        ArrayList<String> temp = new ArrayList<>(categoryHashMap.get(title)); // what does this return? do I need to cast it for addAll
+        ArrayList<String> temp = new ArrayList<>(categoryHashMap.get(category)); // what does this return? do I need to cast it for addAll
 
 
         sourceNamesList.clear();
@@ -253,6 +220,11 @@ public class MainActivity extends AppCompatActivity {
         sourceNamesList.addAll(temp);
 
         ((ArrayAdapter) drawerList.getAdapter()).notifyDataSetChanged();
+
+
+        // Create News Source Downloader Async Task, passing "this" and news category; execute
+        //new NewsSourceDownloader(mainActivity,category).execute();
+
 
         return super.onOptionsItemSelected(item);
 
@@ -269,12 +241,14 @@ public class MainActivity extends AppCompatActivity {
 
     public void reDoFragments(ArrayList<Article> articleList){
 
+        Log.d(TAG, "reDoFragments: started");
         // set Activity Title to the string that holds the name of the current news source
 
         // mainActivity.setTitle(current news source);???
 
         // For each fragment in the PageAdapter (use adapter's getCount()
             // notify the adapter about the change in position (i)
+        Log.d(TAG, "reDoFragments: count " + pageAdapter.getCount());
         for(int i = 0; i < pageAdapter.getCount(); i++ ){
             pageAdapter.notifyChangeInPosition(i);
         }
@@ -287,9 +261,9 @@ public class MainActivity extends AppCompatActivity {
 
         for(int i = 0; i < articleList.size(); i++){
             String src = articleList.get(0).getTitle();
+            Log.d(TAG, "reDoFragments: Article title " + src);
             fragments.add(MyFragment.newInstance( src ));
         }
-
 
         // notify PageAdapter
         pageAdapter.notifyDataSetChanged();
@@ -307,8 +281,6 @@ public class MainActivity extends AppCompatActivity {
         sourceHashMap.clear();
         sourceNamesList.clear();
         categoryHashMap.clear(); // ed
-
-
 
 
         Source source; String category; String name;
@@ -379,7 +351,10 @@ public class MainActivity extends AppCompatActivity {
 
                     Bundle bundle = intent.getExtras();
                     ArrayList<Article> articles = (ArrayList<Article>) bundle.getSerializable("storylist");
-
+                    Log.d(TAG, "onReceive: Article received by onReceive");
+                    for(int i = 0; i <articles.size(); i++){
+                        Log.d(TAG, "onReceive: title: " + articles.get(i).getTitle());
+                    }
                     reDoFragments(articles);
                 }
                 catch (Exception e){
@@ -425,7 +400,7 @@ public class MainActivity extends AppCompatActivity {
             return baseId + position;
         }
 
-        /**
+        /*
          * Notify that the position of a fragment has been changed.
          * Create a new ID for each position to force recreation of the fragment
          * @param n number of items which have been changed
