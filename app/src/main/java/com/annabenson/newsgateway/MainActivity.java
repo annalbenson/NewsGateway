@@ -234,17 +234,15 @@ public class MainActivity extends AppCompatActivity {
             pageAdapter.notifyChangeInPosition(i);
 
         fragments.clear();
-        String src = items.get(idx);
-        int count = (int) (Math.random() * 8 + 2);
 
-        for (int i = 0; i < count; i++) {
-            fragments.add(MyFragment.newInstance(src + ", Item #" + (i+1) + " of " + count));
+        for (int i = 0; i < articleList.size(); i++) {
+            String src = articleList.get(0).getTitle();
+            Log.d(TAG, "reDoFragments: XYZ" + src);
+            //fragments.add(MyFragment.newInstance(src + ", Item #" + (i+1) + " of "));
         }
 
         pageAdapter.notifyDataSetChanged();
         pager.setCurrentItem(0);
-
-
 
 
     }
