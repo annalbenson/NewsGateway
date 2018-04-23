@@ -23,7 +23,7 @@ public class NewsService extends Service {
     private static final String ACTION_NEWS_STORY = "ANS";
     private boolean running = true;
 
-    private ArrayList<Article> storylist;
+    private ArrayList<Article> storylist = new ArrayList<>(); // fix for crashing after service registered
     private ServiceReceiver serviceReceiver;
 
     private NewsService newsService = this;
@@ -33,6 +33,8 @@ public class NewsService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId){
+
+
 
         // Create IntentFilter for ACTION_MSG_TO_SERVICE
         IntentFilter intentFilter = new IntentFilter(ACTION_MSG_TO_SERVICE);
@@ -103,12 +105,14 @@ public class NewsService extends Service {
             // if the intent's action type is ACTION_MSG_TO_SERVICE
                 // get source id string from intent's extras
                 // create news article downloader async task object
+            Log.d(TAG, "onReceive: intent's action is " + intent.getAction());
 
-            if (intent.getAction().equals(ACTION_MSG_TO_SERVICE)){
-                Log.d(TAG, "onReceive: action is ACTION_MSG_TO_SERVICE");
-                String sourceID = intent.getStringExtra( "sourceid" );
-                Log.d(TAG, "onReceive: SourceID" + sourceID);
-                new NewsArticleDownloader(newsService, sourceID).execute();
+            switch (intent.getAction()){
+                case ACTION_MSG_TO_SERVICE:
+                    String sourceID = intent.getStringExtra("sourceID");
+                    Log.d(TAG, "onReceive: SourceID is " + sourceID);
+                    new NewsArticleDownloader(newsService, sourceID).execute();
+                    break;
             }
 
             // END

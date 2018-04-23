@@ -75,6 +75,7 @@ public class MainActivity extends AppCompatActivity {
         startService(intent);
 
         // Create IntentFilter for ACTION_NEWS_STORY messages from the service
+
         IntentFilter intentFilter = new IntentFilter(ACTION_NEWS_STORY);
 
         //Register a NewsReceiver broadcast receiver object using the intent filter
@@ -106,16 +107,22 @@ public class MainActivity extends AppCompatActivity {
                         // create an intent ACTION_MSG_TO_SERVICE
                         Intent intentClick = new Intent();
                         intentClick.setAction(ACTION_MSG_TO_SERVICE);
+                        Log.d(TAG, "onItemClick: creating intent MSG to SERVICE");
 
                         // add the selected source object (use the source map and the source name to get the object) as an extra to the intent
                         Source source = sourceHashMap.get(sourceNamesList.get(position));
 
-                        Bundle bundle = new Bundle();
-                        bundle.putSerializable("source", source);
-                        intentClick.putExtras(bundle);
+                        Log.d(TAG, "onItemClick: adding selected source id " + source.getId());
+                        // more overhead to pass source so just pass ID instead
+
+                        //Bundle bundle = new Bundle();
+                        //bundle.putSerializable("source", source);
+                        //intentClick.putExtras(bundle);
+                        intentClick.putExtra("sourceID", source.getId());
 
                         // broadcast the intent
                         sendBroadcast(intentClick);
+                        Log.d(TAG, "onItemClick: broadcast sent");
 
                         // close the drawer
                         drawerLayout.closeDrawer(drawerList);
@@ -167,6 +174,9 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
+        unregisterReceiver(newsReceiver);
+        Intent intent = new Intent(mainActivity, NewsService.class);
+        stopService(intent);
         super.onDestroy();
     }
 
@@ -207,6 +217,10 @@ public class MainActivity extends AppCompatActivity {
 
         String category = (String) item.getTitle(); // This is a category title
         Log.d(TAG, "onOptionsItemSelected: item.getTitle() is " + category);
+
+
+
+
         //String sourceId = itemSource.getName();
         // sourceId will be the key? maybe sourceName?
         // Either way, need to do a get call on Hashmap
@@ -223,7 +237,8 @@ public class MainActivity extends AppCompatActivity {
 
 
         // Create News Source Downloader Async Task, passing "this" and news category; execute
-        //new NewsSourceDownloader(mainActivity,category).execute();
+        //new NewsSourceDownloader(this,category).execute();
+        // Doesn't work if I do this here, do not know why
 
 
         return super.onOptionsItemSelected(item);
@@ -343,33 +358,33 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onReceive(Context context, Intent intent){
 
-            if(intent.getAction().equals(ACTION_NEWS_STORY)){
+            switch (intent.getAction()){
+                case ACTION_NEWS_STORY:
+                    try{
+                        // get article list (storylist) from intent's extras
+                        Bundle bundle = intent.getExtras();
+                        ArrayList<Article> articles = (ArrayList<Article>) bundle.getSerializable("storylist");
+                        Log.d(TAG, "onReceive: Articles received by onReceive");
+                        for(int i = 0; i <articles.size(); i++){
+                            Log.d(TAG, "onReceive: title: " + articles.get(i).getTitle());
+                        }
 
-                // receives storylist from NewsService
-                try{
-                    // get article list from intent's extras
+                        // call reDoFragments, passing list of articles
+                        reDoFragments(articles);
 
-                    Bundle bundle = intent.getExtras();
-                    ArrayList<Article> articles = (ArrayList<Article>) bundle.getSerializable("storylist");
-                    Log.d(TAG, "onReceive: Article received by onReceive");
-                    for(int i = 0; i <articles.size(); i++){
-                        Log.d(TAG, "onReceive: title: " + articles.get(i).getTitle());
                     }
-                    reDoFragments(articles);
-                }
-                catch (Exception e){
-                    Log.d(TAG, "onReceive: " + e.getMessage());
-                    e.printStackTrace();
-                }
+                    catch (Exception e){
+                        Log.d(TAG, "onReceive: " + e.getMessage());
+                        e.printStackTrace();
+                    }
+                    break;
 
-            }
-            else{
-                Log.d(TAG, "onReceive: Non recognised action type " + intent.getAction());
-            }
-        }
+            } // end switch
+
+        } // end onReceive
 
 
-    }
+    } // end receiver class
 
     private class MyPageAdapter extends FragmentPagerAdapter {
         private long baseId = 0;
