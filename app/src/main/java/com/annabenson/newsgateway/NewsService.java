@@ -36,11 +36,9 @@ public class NewsService extends Service {
 
         // Create IntentFilter for ACTION_MSG_TO_SERVICE
         IntentFilter intentFilter = new IntentFilter(ACTION_MSG_TO_SERVICE);
-
         // Register Service Receiver using intentFilter
         serviceReceiver = new ServiceReceiver();
         registerReceiver(serviceReceiver,intentFilter);
-
         // Create and start services thread
         new Thread(new Runnable() {
             @Override
@@ -69,7 +67,6 @@ public class NewsService extends Service {
                 }
             }
         }).start();
-
         return  Service.START_STICKY;
     }
 
@@ -105,7 +102,7 @@ public class NewsService extends Service {
 
             // if the intent's action type is ACTION_MSG_TO_SERVICE
                 // get source id string from intent's extras
-                // create news article downloader async task object using "this" and the source if as creator parameter and execute
+                // create news article downloader async task object
 
             if (intent.getAction().equals(ACTION_MSG_TO_SERVICE)){
                 Log.d(TAG, "onReceive: action is ACTION_MSG_TO_SERVICE");
