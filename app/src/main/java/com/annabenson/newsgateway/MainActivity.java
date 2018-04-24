@@ -63,9 +63,8 @@ public class MainActivity extends AppCompatActivity {
 
     private Menu opt_menu;
 
+    private String currentCategory = "";
 
-    // saving state
-    private MyFragment myFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -178,8 +177,53 @@ public class MainActivity extends AppCompatActivity {
 
 
 
+
         super.onResume();
     }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState){
+
+        // need to save category of current fragment
+        // also need which fragment (need fragment numbering)
+
+        int currentFragment = pager.getCurrentItem();
+        //Fragment f = pageAdapter.getItem(currentFragment);
+        //String articleTitle = f.getArguments().getString("title");
+        //articleTitle
+
+        // assuming you're not changing the category and then rotating
+        // assuming you're just viewing
+        String currentSource = (String) mainActivity.getTitle();
+
+        outState.putString("currentCategory", currentCategory);
+        outState.putInt("currentFragment", currentFragment);
+        outState.putString("currentSource", currentSource );
+
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState){
+        super.onRestoreInstanceState(savedInstanceState);
+
+        // Need to load category into drawer
+        // Need to select news source and load fragment
+        // Need to make viewer on specific fragment
+
+        String category = savedInstanceState.getString("currentCategory");
+
+        // similar code to onOptionsItemSelected
+        ArrayList<String> temp = new ArrayList<>(categoryHashMap.get(category));
+        sourceNamesList.clear();
+        sourceNamesList.addAll(temp);
+        ((ArrayAdapter) drawerList.getAdapter()).notifyDataSetChanged();
+
+        // need to set fragment to the fragment they were on
+        int pos = savedInstanceState.getInt("currentFragment");
+        pager.setCurrentItem(pos);
+    }
+
 
     @Override
     protected void onDestroy() {
@@ -226,7 +270,7 @@ public class MainActivity extends AppCompatActivity {
 
         String category = (String) item.getTitle(); // This is a category title
         Log.d(TAG, "onOptionsItemSelected: item.getTitle() is " + category);
-
+        currentCategory = category; // for save instance state
 
 
 
@@ -283,14 +327,16 @@ public class MainActivity extends AppCompatActivity {
         // For each Articles in the list passed in 0..n
             // make a new Fragment using news article i
 
-        for(int i = 0; i < articleList.size(); i++){
+        int totalArticles = articleList.size();
+        for(int i = 0; i < totalArticles; i++){
             Article article = articleList.get(i);
 
             String src = articleList.get(i).getTitle();
             Log.d(TAG, "reDoFragments: Article title " + src);
 
-            fragments.add(MyFragment.newInstance( mainActivity, article.getTitle(), article.getPublishedAt(), article.getAuthor(), article.getUrlToImage(), article.getDescription() ));
+            fragments.add(MyFragment.newInstance( mainActivity, article.getTitle(), article.getPublishedAt(), article.getAuthor(), article.getUrlToImage(), article.getDescription(), i, totalArticles ));
         }
+
 
         // notify PageAdapter
         pageAdapter.notifyDataSetChanged();

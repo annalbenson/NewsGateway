@@ -6,6 +6,7 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,10 +32,11 @@ public class MyFragment extends Fragment{
     public TextView articleAuthor;
     public ImageView articleImage;
     public TextView articleDescription;
+    public TextView articleCount;
 
 
 
-    public static final MyFragment newInstance(  MainActivity ma ,String title, String date, String author, String image, String description)
+    public static final MyFragment newInstance(  MainActivity ma ,String title, String date, String author, String image, String description, int i, int n)
     {
         mainActivity = ma;
 
@@ -46,6 +48,9 @@ public class MyFragment extends Fragment{
         bdl.putString("author", author);
         bdl.putString("image", image);
         bdl.putString("description", description);
+        bdl.putInt("i",i );
+        bdl.putInt("n", n);
+
         f.setArguments(bdl);
         return f;
     }
@@ -68,6 +73,10 @@ public class MyFragment extends Fragment{
         String author = ( getArguments().getString("author") != null  || ! getArguments().getString("author").equals("null")  ? getArguments().getString("author") : "" );
         String image = getArguments().getString("image");
         String description = ( getArguments().getString("description") != null ? getArguments().getString("description") : "" );
+        int i = getArguments().getInt("i");
+        int n = getArguments().getInt("n");
+
+
 
         View v = inflater.inflate(R.layout.myfragment_layout, container, false);
         //TextView messageTextView = (TextView)v.findViewById(R.id.textView);
@@ -84,12 +93,17 @@ public class MyFragment extends Fragment{
         articleAuthor = v.findViewById(R.id.authorID);
         articleImage = v.findViewById(R.id.imageID);
         articleDescription = v.findViewById(R.id.descriptionID);
+        articleCount = v.findViewById(R.id.countID);
 
         // set text views
         articleTitle.setText(title);
         articleDate.setText(date);
         articleAuthor.setText(author);
         articleDescription.setText(description);
+        articleCount.setText((i+1) + " of " + n); // so start at 1
+
+        // to avoid text being cut off
+        articleDescription.setMovementMethod(new ScrollingMovementMethod());
 
         //image loading
         articleImage.setImageResource(R.drawable.placeholder);
@@ -132,6 +146,7 @@ public class MyFragment extends Fragment{
 
         return v;
     }
+
 
     private boolean connected(){
         ConnectivityManager cm = (ConnectivityManager) mainActivity.getSystemService(Context.CONNECTIVITY_SERVICE);
