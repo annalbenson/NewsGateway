@@ -63,11 +63,16 @@ public class MainActivity extends AppCompatActivity {
 
     private Menu opt_menu;
 
+
+    // saving state
+    private MyFragment myFragment;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         getSupportActionBar().setTitle("News Gateway");
+        getWindow().getDecorView().setBackgroundColor( getResources().getColor( R.color.grey));
 
 
         // Start Service (News Service)
@@ -169,6 +174,10 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onResume(){
+
+
+
+
         super.onResume();
     }
 
@@ -280,7 +289,7 @@ public class MainActivity extends AppCompatActivity {
             String src = articleList.get(i).getTitle();
             Log.d(TAG, "reDoFragments: Article title " + src);
 
-            fragments.add(MyFragment.newInstance( article.getTitle(), article.getPublishedAt(), article.getAuthor(), article.getUrlToImage(), article.getDescription() ));
+            fragments.add(MyFragment.newInstance( mainActivity, article.getTitle(), article.getPublishedAt(), article.getAuthor(), article.getUrlToImage(), article.getDescription() ));
         }
 
         // notify PageAdapter
