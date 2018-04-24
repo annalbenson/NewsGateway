@@ -64,6 +64,7 @@ public class MainActivity extends AppCompatActivity {
     private Menu opt_menu;
 
     private String currentCategory = "";
+    private String currentSource = "";
 
 
     @Override
@@ -184,24 +185,34 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onSaveInstanceState(Bundle outState){
 
+        Log.d(TAG, "onSaveInstanceState: saving state");
         // need to save category of current fragment
         // also need which fragment (need fragment numbering)
 
         int currentFragment = pager.getCurrentItem();
+        Log.d(TAG, "onSaveInstanceState: current fragment is " + currentFragment);
         //Fragment f = pageAdapter.getItem(currentFragment);
         //String articleTitle = f.getArguments().getString("title");
         //articleTitle
 
         // assuming you're not changing the category and then rotating
         // assuming you're just viewing
-        String currentSource = (String) mainActivity.getTitle();
+        String currentSourceName = (String) getSupportActionBar().getTitle(); // get name
+
+        Log.d(TAG, "onSaveInstanceState: current source name in bar is " + currentSourceName);
+        Source source = sourceHashMap.get(currentSourceName); // get source
+        Log.d(TAG, "onSaveInstanceState: source is non null: " + source);
+        String currentSourceID = source.getId();
+        Log.d(TAG, "onSaveInstanceState: currentSourceID is " + currentSourceID);
 
         outState.putString("currentCategory", currentCategory);
         outState.putInt("currentFragment", currentFragment);
-        outState.putString("currentSource", currentSource );
+        outState.putString("currentSourceName", currentSourceName);
+        outState.putString("currentSourceID", currentSourceID );
 
         super.onSaveInstanceState(outState);
     }
+
 
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState){
@@ -212,17 +223,44 @@ public class MainActivity extends AppCompatActivity {
         // Need to make viewer on specific fragment
 
         String category = savedInstanceState.getString("currentCategory");
+        Log.d(TAG, "onRestoreInstanceState: loaded category is " + category);
+        String sourceName = savedInstanceState.getString("currentSourceName");
+        Log.d(TAG, "onRestoreInstanceState: loaded name is " + sourceName);
+        String sourceID = savedInstanceState.getString("currentSourceID");
+        Log.d(TAG, "onRestoreInstanceState: loaded id is " + sourceID);
+        getSupportActionBar().setTitle(sourceName);
+        Log.d(TAG, "onRestoreInstanceState: bar set to " + sourceName);
 
+
+
+
+        // use sourceID to get article fragments
+
+        /*
+        IntentFilter intentFilter = new IntentFilter(ACTION_NEWS_STORY);
+        newsReceiver = new NewsReceiver();
+        registerReceiver(newsReceiver, intentFilter);
+
+        Log.d(TAG, "onRestoreInstanceState: using sourceID to get article fragments");
+        //pager.setBackground(null);
+        Intent intent = new Intent();
+        intent.setAction(ACTION_MSG_TO_SERVICE);
+        intent.putExtra("sourceID", sourceID);
+        sendBroadcast(intent);
+        */
+
+        /*
         // similar code to onOptionsItemSelected
         ArrayList<String> temp = new ArrayList<>(categoryHashMap.get(category));
         sourceNamesList.clear();
         sourceNamesList.addAll(temp);
         ((ArrayAdapter) drawerList.getAdapter()).notifyDataSetChanged();
-
+        */
         // need to set fragment to the fragment they were on
-        int pos = savedInstanceState.getInt("currentFragment");
-        pager.setCurrentItem(pos);
+        //int pos = savedInstanceState.getInt("currentFragment");
+        //pager.setCurrentItem(pos);
     }
+    
 
 
     @Override
@@ -312,11 +350,12 @@ public class MainActivity extends AppCompatActivity {
         Log.d(TAG, "reDoFragments: started");
         // set Activity Title to the string that holds the name of the current news source
 
-        // mainActivity.setTitle(current news source);???
+
+        //getSupportActionBar().setTitle(current news source);
 
         // For each fragment in the PageAdapter (use adapter's getCount()
             // notify the adapter about the change in position (i)
-        Log.d(TAG, "reDoFragments: count " + pageAdapter.getCount());
+        //Log.d(TAG, "reDoFragments: count " + pageAdapter.getCount());
         for(int i = 0; i < pageAdapter.getCount(); i++ ){
             pageAdapter.notifyChangeInPosition(i);
         }
@@ -332,7 +371,7 @@ public class MainActivity extends AppCompatActivity {
             Article article = articleList.get(i);
 
             String src = articleList.get(i).getTitle();
-            Log.d(TAG, "reDoFragments: Article title " + src);
+            //Log.d(TAG, "reDoFragments: Article title " + src);
 
             fragments.add(MyFragment.newInstance( mainActivity, article.getTitle(), article.getPublishedAt(), article.getAuthor(), article.getUrlToImage(), article.getDescription(), i, totalArticles ));
         }
@@ -363,14 +402,14 @@ public class MainActivity extends AppCompatActivity {
         for (int i = 0; i < sources.size(); i++ ){
             source = sources.get(i);
             category = source.getCategory();
-            Log.d(TAG, "setSources: category: " + category);
+            //Log.d(TAG, "setSources: category: " + category);
             name = source.getName();
-            Log.d(TAG, "setSources: name: " + name);
+            //Log.d(TAG, "setSources: name: " + name);
             sourceNamesList.add(name);
             sourceHashMap.put(name, source);
 
             if(! categoryHashMap.containsKey(category)){
-                Log.d(TAG, "setSources: no key, adding key " + category);
+                //Log.d(TAG, "setSources: no key, adding key " + category);
                 categoryHashMap.put(category, new ArrayList<String>());
             }
             categoryHashMap.get(category).add(name);

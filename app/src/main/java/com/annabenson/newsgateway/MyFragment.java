@@ -69,8 +69,18 @@ public class MyFragment extends Fragment{
 
 
         String title = ( getArguments().getString("title") != null ? getArguments().getString("title") : "" );
-        String date = ( getArguments().getString("date") != null || ! getArguments().getString("date").equals("null") ? getArguments().getString("date") : "" );
-        String author = ( getArguments().getString("author") != null  || ! getArguments().getString("author").equals("null")  ? getArguments().getString("author") : "" );
+        //String date = ( getArguments().getString("date") != null || ! getArguments().getString("date").equals("null") ? getArguments().getString("date") : "" );
+        String date = getArguments().getString("date");
+        if(date == null || date.equals("null")){
+            date = "";
+        }
+
+        //String author = ( getArguments().getString("author") != null  || ! getArguments().getString("author").equals("null")  ? getArguments().getString("author") : "" );
+        String author = getArguments().getString("author");
+        if(author == null || author.equals("null")){
+            author = "";
+        }
+
         String image = getArguments().getString("image");
         String description = ( getArguments().getString("description") != null ? getArguments().getString("description") : "" );
         int i = getArguments().getInt("i");

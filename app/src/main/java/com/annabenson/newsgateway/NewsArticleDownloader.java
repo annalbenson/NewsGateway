@@ -39,7 +39,7 @@ public class NewsArticleDownloader extends AsyncTask<String, Void, String> {
 
     @Override
     protected void onPreExecute() {
-        Log.d(TAG, "onPreExecute: ");
+        Log.d(TAG, "onPreExecute: preparing to download articles");
     }
 
     @Override
@@ -100,7 +100,7 @@ public class NewsArticleDownloader extends AsyncTask<String, Void, String> {
 
 
     private ArrayList<Article> parseJSON(String s){
-        Log.d(TAG, "parseJSON: ");
+        Log.d(TAG, "parseJSON: parsing articles ");
 
         ArrayList<Article> articleList = new ArrayList<>();
 
