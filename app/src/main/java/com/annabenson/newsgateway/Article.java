@@ -12,7 +12,7 @@ public class Article implements Serializable {
     private String title;
     private String description;
     private String urlToImage;
-    private String publishedAt;
+    private String publishedAt; // date
 
 
     public Article(String author, String title, String description, String urlToImage, String publishedAt) {

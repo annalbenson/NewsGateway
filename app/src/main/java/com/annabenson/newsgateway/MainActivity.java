@@ -275,9 +275,12 @@ public class MainActivity extends AppCompatActivity {
             // make a new Fragment using news article i
 
         for(int i = 0; i < articleList.size(); i++){
-            String src = articleList.get(0).getTitle();
+            Article article = articleList.get(i);
+
+            String src = articleList.get(i).getTitle();
             Log.d(TAG, "reDoFragments: Article title " + src);
-            fragments.add(MyFragment.newInstance( src ));
+
+            fragments.add(MyFragment.newInstance( article.getTitle(), article.getPublishedAt(), article.getAuthor(), article.getUrlToImage(), article.getDescription() ));
         }
 
         // notify PageAdapter
