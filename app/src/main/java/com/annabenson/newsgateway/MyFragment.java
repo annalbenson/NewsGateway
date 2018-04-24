@@ -1,6 +1,7 @@
 package com.annabenson.newsgateway;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -21,11 +22,12 @@ import com.squareup.picasso.Picasso;
  * Created by Anna on 4/17/2018.
  */
 
-public class MyFragment extends Fragment{
+public class MyFragment extends Fragment implements View.OnClickListener {
 
     //public static final String EXTRA_MESSAGE = "EXTRA_MESSAGE";
     public static final String TAG = "MyFragment";
     public static MainActivity mainActivity;
+    public static String articleURL;
 
     public TextView articleTitle;
     public TextView articleDate;
@@ -36,9 +38,10 @@ public class MyFragment extends Fragment{
 
 
 
-    public static final MyFragment newInstance(  MainActivity ma ,String title, String date, String author, String image, String description, int i, int n)
+    public static final MyFragment newInstance(  MainActivity ma ,String title, String date, String author, String image, String description, int i, int n, String url)
     {
         mainActivity = ma;
+        articleURL = url;
 
         Log.d(TAG, "newInstance: with title " + title);
         MyFragment f = new MyFragment();
@@ -59,6 +62,20 @@ public class MyFragment extends Fragment{
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
+        View v = inflater.inflate(R.layout.myfragment_layout, container, false);
+        // connect views to variables
+        articleTitle = v.findViewById(R.id.titleID);
+        articleDate = v.findViewById(R.id.dateID);
+        articleAuthor = v.findViewById(R.id.authorID);
+        articleImage = v.findViewById(R.id.imageID);
+        articleDescription = v.findViewById(R.id.descriptionID);
+        articleCount = v.findViewById(R.id.countID);
+
+        articleTitle.setOnClickListener(this);
+        articleImage.setOnClickListener(this);
+        articleDescription.setOnClickListener(this);
+
+
         /*
         String title = getArguments().getString("title");
         String date = getArguments().getString("date");
@@ -72,13 +89,13 @@ public class MyFragment extends Fragment{
         //String date = ( getArguments().getString("date") != null || ! getArguments().getString("date").equals("null") ? getArguments().getString("date") : "" );
         String date = getArguments().getString("date");
         if(date == null || date.equals("null")){
-            date = "";
+            articleDate.setVisibility(View.GONE);
         }
 
         //String author = ( getArguments().getString("author") != null  || ! getArguments().getString("author").equals("null")  ? getArguments().getString("author") : "" );
         String author = getArguments().getString("author");
         if(author == null || author.equals("null")){
-            author = "";
+            articleAuthor.setVisibility(View.GONE);
         }
 
         String image = getArguments().getString("image");
@@ -88,7 +105,7 @@ public class MyFragment extends Fragment{
 
 
 
-        View v = inflater.inflate(R.layout.myfragment_layout, container, false);
+
         //TextView messageTextView = (TextView)v.findViewById(R.id.textView);
         //messageTextView.setText(message);
 
@@ -97,13 +114,6 @@ public class MyFragment extends Fragment{
 
 
 
-        // connect views to variables
-        articleTitle = v.findViewById(R.id.titleID);
-        articleDate = v.findViewById(R.id.dateID);
-        articleAuthor = v.findViewById(R.id.authorID);
-        articleImage = v.findViewById(R.id.imageID);
-        articleDescription = v.findViewById(R.id.descriptionID);
-        articleCount = v.findViewById(R.id.countID);
 
         // set text views
         articleTitle.setText(title);
@@ -119,7 +129,6 @@ public class MyFragment extends Fragment{
         articleImage.setImageResource(R.drawable.placeholder);
 
         if( connected() ) {
-
 
             if (image == null) {
                 Log.d(TAG, "onCreateView: null image url");
@@ -156,6 +165,25 @@ public class MyFragment extends Fragment{
 
         return v;
     }
+
+
+    @Override
+    public void onClick(View v){
+        switch (v.getId()){
+            case R.id.titleID:
+            case R.id.imageID:
+            case R.id.descriptionID:
+                Log.d(TAG, "onClick: clicked on title, image, or description");
+
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.setData(Uri.parse(articleURL));
+                startActivity(intent);
+            break;
+            default:
+                Log.d(TAG, "onClick: clicked anywhere else");
+        }
+    }
+
 
 
     private boolean connected(){

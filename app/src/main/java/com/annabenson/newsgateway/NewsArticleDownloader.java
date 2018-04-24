@@ -104,7 +104,7 @@ public class NewsArticleDownloader extends AsyncTask<String, Void, String> {
 
         ArrayList<Article> articleList = new ArrayList<>();
 
-        String author; String title; String description; String urlToImage; String publishedAt;
+        String author; String title; String description; String urlToImage; String publishedAt; String urlToArticle;
 
         Log.d(TAG, "parseJSON: String is " + s);
         try{
@@ -119,7 +119,10 @@ public class NewsArticleDownloader extends AsyncTask<String, Void, String> {
                 urlToImage = obj.getString("urlToImage");
                 publishedAt = obj.getString("publishedAt");
 
-                articleList.add( new Article(author,title,description,urlToImage,publishedAt));
+                // EC
+                urlToArticle = obj.getString("url");
+
+                articleList.add( new Article(author,title,description,urlToImage,publishedAt, urlToArticle));
             }
 
             return articleList;

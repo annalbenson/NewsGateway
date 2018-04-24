@@ -182,6 +182,7 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
     }
 
+    /*
     @Override
     protected void onSaveInstanceState(Bundle outState){
 
@@ -199,6 +200,7 @@ public class MainActivity extends AppCompatActivity {
         // assuming you're just viewing
         String currentSourceName = (String) getSupportActionBar().getTitle(); // get name
 
+
         Log.d(TAG, "onSaveInstanceState: current source name in bar is " + currentSourceName);
         Source source = sourceHashMap.get(currentSourceName); // get source
         Log.d(TAG, "onSaveInstanceState: source is non null: " + source);
@@ -212,8 +214,9 @@ public class MainActivity extends AppCompatActivity {
 
         super.onSaveInstanceState(outState);
     }
+    */
 
-
+    /*
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState){
         super.onRestoreInstanceState(savedInstanceState);
@@ -255,11 +258,12 @@ public class MainActivity extends AppCompatActivity {
         sourceNamesList.clear();
         sourceNamesList.addAll(temp);
         ((ArrayAdapter) drawerList.getAdapter()).notifyDataSetChanged();
-        */
+
         // need to set fragment to the fragment they were on
         //int pos = savedInstanceState.getInt("currentFragment");
         //pager.setCurrentItem(pos);
     }
+    */
     
 
 
@@ -373,7 +377,7 @@ public class MainActivity extends AppCompatActivity {
             String src = articleList.get(i).getTitle();
             //Log.d(TAG, "reDoFragments: Article title " + src);
 
-            fragments.add(MyFragment.newInstance( mainActivity, article.getTitle(), article.getPublishedAt(), article.getAuthor(), article.getUrlToImage(), article.getDescription(), i, totalArticles ));
+            fragments.add(MyFragment.newInstance( mainActivity, article.getTitle(), article.getPublishedAt(), article.getAuthor(), article.getUrlToImage(), article.getDescription(), i, totalArticles, article.getUrlToArticle() ));
         }
 
 
@@ -445,6 +449,9 @@ public class MainActivity extends AppCompatActivity {
         // END
 
     }
+
+
+
 
 
     // Flow Charts page 2/6--> News Receiver "Class inside Main Activity"

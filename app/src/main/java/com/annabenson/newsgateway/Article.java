@@ -14,10 +14,14 @@ public class Article implements Serializable {
     private String urlToImage;
     private String publishedAt; // date
 
+    // EC
 
-    public Article(String author, String title, String description, String urlToImage, String publishedAt) {
+    private String urlToArticle;
+
+
+    public Article(String author, String title, String description, String urlToImage, String publishedAt, String urlToArticle) {
         setAuthor(author); setTitle(title); setDescription(description);
-        setUrlToImage(urlToImage); setPublishedAt(publishedAt);
+        setUrlToImage(urlToImage); setPublishedAt(publishedAt); setUrlToArticle(urlToArticle);
 
     }
 
@@ -57,5 +61,13 @@ public class Article implements Serializable {
 
     public void setPublishedAt(String publishedAt) {
         this.publishedAt = publishedAt;
+    }
+
+    public String getUrlToArticle() {
+        return urlToArticle;
+    }
+
+    public void setUrlToArticle(String urlToArticle) {
+        this.urlToArticle = urlToArticle;
     }
 }
