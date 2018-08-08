@@ -15,14 +15,11 @@ tools:context="com.annabenson.newsgateway.MainActivity">
         android:background="@drawable/backgroundimage"/>
 
 
-
     <ListView
         android:id="@+id/drawer_list"
         android:layout_width="200dp"
         android:layout_height="match_parent"
         android:layout_gravity="start"
-        android:background="@android:color/background_dark"
-        android:choiceMode="singleChoice"
-         />
+        android:choiceMode="singleChoice" />
 
 </android.support.v4.widget.DrawerLayout>

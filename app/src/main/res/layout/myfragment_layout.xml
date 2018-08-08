@@ -4,7 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/grey"
     android:clickable="true"
     android:orientation="vertical">
 
@@ -21,7 +20,6 @@
         android:onClick="onClick"
         android:textAlignment="center"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:textColor="@android:color/black"
         android:textSize="24sp"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -79,7 +77,6 @@
         android:maxLines="100"
         android:onClick="onClick"
         android:scrollbars="vertical"
-        android:textColor="@android:color/black"
         android:textSize="18sp"
         app:layout_constraintBottom_toTopOf="@+id/countID"
         app:layout_constraintEnd_toEndOf="parent"

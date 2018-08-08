@@ -71,6 +71,7 @@ public class MyFragment extends Fragment implements View.OnClickListener {
         articleDescription = v.findViewById(R.id.descriptionID);
         articleCount = v.findViewById(R.id.countID);
 
+        // set on click listeners
         articleTitle.setOnClickListener(this);
         articleImage.setOnClickListener(this);
         articleDescription.setOnClickListener(this);
@@ -84,7 +85,7 @@ public class MyFragment extends Fragment implements View.OnClickListener {
         String description = getArguments().getString("description");
         */
 
-
+        //
         String title = ( getArguments().getString("title") != null ? getArguments().getString("title") : "" );
         //String date = ( getArguments().getString("date") != null || ! getArguments().getString("date").equals("null") ? getArguments().getString("date") : "" );
         String date = getArguments().getString("date");
@@ -99,7 +100,17 @@ public class MyFragment extends Fragment implements View.OnClickListener {
         }
 
         String image = getArguments().getString("image");
-        String description = ( getArguments().getString("description") != null ? getArguments().getString("description") : "" );
+
+        //String description = ( getArguments().getString("description") != null ? getArguments().getString("description") : "" );
+
+        String description = getArguments().getString("description");
+        if(description == null || description.equals("null")){
+            articleDescription.setVisibility(View.GONE);
+        }
+
+
+        Log.d(TAG, "onCreateView: description is" + description);
+
         int i = getArguments().getInt("i");
         int n = getArguments().getInt("n");
 

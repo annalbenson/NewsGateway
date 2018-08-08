@@ -27,6 +27,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
+import static android.graphics.Color.BLACK;
+
 
 public class MainActivity extends AppCompatActivity {
 
@@ -72,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         getSupportActionBar().setTitle("News Gateway");
-        getWindow().getDecorView().setBackgroundColor( getResources().getColor( R.color.grey));
+
 
 
         // Start Service (News Service)
@@ -96,6 +98,7 @@ public class MainActivity extends AppCompatActivity {
         drawerList.setAdapter(new ArrayAdapter<>(this,
                 R.layout.drawer_item, sourceNamesList));
 
+        drawerList.setBackgroundResource(R.color.secondaryColor);
 
         // Drawer Item Selected
         drawerList.setOnItemClickListener(
