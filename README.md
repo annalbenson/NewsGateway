@@ -1,7 +1,7 @@
 # NewsGateway
 
 <b>Description</b>
-- Android App that
+- Android App that is a news aggregator.
 
 <b>Installation</b>
 - USB Cable
@@ -9,3 +9,4 @@
 - Android Studio or equivalent IDE
 
 <b>Usage</b>
+
