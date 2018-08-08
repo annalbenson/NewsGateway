@@ -105,7 +105,8 @@ public class MyFragment extends Fragment implements View.OnClickListener {
 
         String description = getArguments().getString("description");
         if(description == null || description.equals("null")){
-            articleDescription.setVisibility(View.GONE);
+            description = "No summary available.";
+            //articleDescription.setVisibility(View.GONE);
         }
 
 
