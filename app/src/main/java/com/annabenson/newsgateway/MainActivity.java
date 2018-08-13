@@ -41,7 +41,6 @@ public class MainActivity extends AppCompatActivity {
 
     private NewsReceiver newsReceiver;
 
-
     // HashMap for Source Names --> Source Objects
     private HashMap<String,Source> sourceHashMap = new HashMap<>(); // <K is key type, V is value type>
     // ArrayList of Source Names (used to populate drawer list)
@@ -56,7 +55,6 @@ public class MainActivity extends AppCompatActivity {
     private MyPageAdapter pageAdapter;
     private List<Fragment> fragments;
     private ViewPager pager;
-
 
     // drawer attributes
     private DrawerLayout drawerLayout;
@@ -100,6 +98,7 @@ public class MainActivity extends AppCompatActivity {
 
         drawerList.setBackgroundResource(R.color.secondaryColor);
 
+
         // Drawer Item Selected
         drawerList.setOnItemClickListener(
                 new ListView.OnItemClickListener() {
@@ -140,7 +139,6 @@ public class MainActivity extends AppCompatActivity {
                     }
                 } // end new
         );
-
 
 
         drawerToggle = new ActionBarDrawerToggle(
