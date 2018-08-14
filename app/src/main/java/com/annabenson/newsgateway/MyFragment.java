@@ -12,10 +12,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewParent;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 
 
 /**
@@ -24,10 +26,10 @@ import com.squareup.picasso.Picasso;
 
 public class MyFragment extends Fragment implements View.OnClickListener {
 
-    //public static final String EXTRA_MESSAGE = "EXTRA_MESSAGE";
     public static final String TAG = "MyFragment";
     public static MainActivity mainActivity;
-    public static String articleURL;
+    //public static String articleURL;
+    public static ArrayList<String> fragmentUrls;
 
     public TextView articleTitle;
     public TextView articleDate;
@@ -36,12 +38,11 @@ public class MyFragment extends Fragment implements View.OnClickListener {
     public TextView articleDescription;
     public TextView articleCount;
 
-
-
     public static final MyFragment newInstance(  MainActivity ma ,String title, String date, String author, String image, String description, int i, int n, String url)
     {
         mainActivity = ma;
-        articleURL = url;
+        //Log.d(TAG, "newInstance: with url " + url);
+        //fragmentUrls.add(url);
 
         Log.d(TAG, "newInstance: with title " + title);
         MyFragment f = new MyFragment();
@@ -77,23 +78,14 @@ public class MyFragment extends Fragment implements View.OnClickListener {
         articleDescription.setOnClickListener(this);
 
 
-        /*
-        String title = getArguments().getString("title");
-        String date = getArguments().getString("date");
-        String author = getArguments().getString("author");
-        String image = getArguments().getString("image");
-        String description = getArguments().getString("description");
-        */
-
-        //
+        // Get title
         String title = ( getArguments().getString("title") != null ? getArguments().getString("title") : "" );
-        //String date = ( getArguments().getString("date") != null || ! getArguments().getString("date").equals("null") ? getArguments().getString("date") : "" );
+        // Get date
         String date = getArguments().getString("date");
         if(date == null || date.equals("null")){
             articleDate.setVisibility(View.GONE);
         }
-
-        //String author = ( getArguments().getString("author") != null  || ! getArguments().getString("author").equals("null")  ? getArguments().getString("author") : "" );
+        // Get author
         String author = getArguments().getString("author");
         if(author == null || author.equals("null")){
             articleAuthor.setVisibility(View.GONE);
@@ -186,10 +178,21 @@ public class MyFragment extends Fragment implements View.OnClickListener {
             case R.id.imageID:
             case R.id.descriptionID:
                 Log.d(TAG, "onClick: clicked on title, image, or description");
+                View q = (View) v.getParent();
+                /*
+                View x = (View) v.getParent();
+                TextView fragmentCount = x.findViewById(R.id.countID);
+                String s = fragmentCount.getText().toString();
+                int which = Integer.parseInt(s);
+                Log.d(TAG, "onClick: which fragment" + which);
+                String articleURL = fragmentUrls.get(which);
+
+                Log.d(TAG, "onClick: using url " + articleURL);
 
                 Intent intent = new Intent(Intent.ACTION_VIEW);
                 intent.setData(Uri.parse(articleURL));
                 startActivity(intent);
+                */
             break;
             default:
                 Log.d(TAG, "onClick: clicked anywhere else");

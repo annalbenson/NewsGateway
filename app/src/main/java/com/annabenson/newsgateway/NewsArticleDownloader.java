@@ -121,6 +121,8 @@ public class NewsArticleDownloader extends AsyncTask<String, Void, String> {
 
                 // EC
                 urlToArticle = obj.getString("url");
+                Log.d(TAG, "parseJSON: title " + title);
+                Log.d(TAG, "parseJSON: url " + urlToArticle);
 
                 articleList.add( new Article(author,title,description,urlToImage,publishedAt, urlToArticle));
             }
