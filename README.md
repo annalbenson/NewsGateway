@@ -25,7 +25,7 @@
   <p align="center">
     <img src="https://github.com/annalbenson/NewsGateway/blob/master/screenshots/technology_selected.png" height="400" >
   </p>
-  <p> upon selecting a news source, fragments will load in a page viewer and you'll be able to swipe through said stories:</p>
+  <p> Upon selecting a news source, fragments will load in a page viewer and you'll be able to swipe through said stories, eventually clicking will cause a browser to open with the current news story.</p>
   <p align="center">
     <img src="https://github.com/annalbenson/NewsGateway/blob/master/screenshots/story1.png" height="400" >
     <img src="https://github.com/annalbenson/NewsGateway/blob/master/screenshots/story2.png" height="400" >
